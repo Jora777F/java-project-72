@@ -1,0 +1,37 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout resources
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run tests
+        working-directory: ./app
+        run: make test
+
+      - name: Run checkstyle
+        working-directory: ./app
+        run: make lint
+
+      - name: Build with Gradle
+        working-directory: ./app
+        run: |
+          make build
+          echo "Build completed successfully with tests and checkstyle"
