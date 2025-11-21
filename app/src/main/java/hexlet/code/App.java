@@ -5,27 +5,56 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.util.stream.Collectors;
 
 public class App {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
     public static final String DEFAULT_PORT = "7070";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         DataSource dataSource = DatabaseConfig.getDataSource();
-        Javalin app = getApp(dataSource);
+        initDatabase(dataSource);
+
+        Javalin app = getApp();
         app.start(getPort());
-        LOGGER.info("Application configured successfully");
+        LOGGER.info("Application started successfully.");
     }
 
-    public static Javalin getApp(DataSource dataSource) {
+    public static Javalin getApp() {
         return Javalin.create()
                 .get("/", ctx -> ctx.result("Hello World"));
     }
 
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", DEFAULT_PORT);
-        LOGGER.debug("Using port: {}", port);
+        LOGGER.debug("Starting server on port: {}", port);
         return Integer.parseInt(port);
+    }
+
+    private static void initDatabase(DataSource dataSource) throws SQLException {
+        LOGGER.info("Initializing database schema...");
+        try (var connection = dataSource.getConnection();
+             var statement = connection.createStatement()) {
+
+            var inputStream = App.class.getClassLoader()
+                    .getResourceAsStream("schema.sql");
+
+            if (inputStream == null) {
+                throw new RuntimeException("schema.sql not found");
+            }
+
+            var sql = new BufferedReader(
+                    new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
+
+            statement.execute(sql);
+            LOGGER.info("Database schema initialized successfully");
+        }
     }
 }
