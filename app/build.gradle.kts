@@ -23,6 +23,7 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("org.postgresql:postgresql:42.7.3")
+    implementation("com.h2database:h2:2.3.232")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
