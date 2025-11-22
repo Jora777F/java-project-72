@@ -3,6 +3,9 @@ package hexlet.code;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controller.UrlsController;
+import hexlet.code.repository.UrlRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 import org.slf4j.Logger;
@@ -24,20 +27,22 @@ public class App {
         DataSource dataSource = DatabaseConfig.getDataSource();
         initDatabase(dataSource);
 
-        Javalin app = getApp();
+        Javalin app = getApp(dataSource);
         app.start(getPort());
         LOGGER.info("Application started successfully.");
     }
 
-    public static Javalin getApp() {
+    public static Javalin getApp(DataSource dataSource) {
         var templateEngine = createTemplateEngine();
+        var urlRepository = new UrlRepository(dataSource);
 
         var app = Javalin.create(javalinConfig -> {
             javalinConfig.bundledPlugins.enableDevLogging();
             javalinConfig.fileRenderer(new JavalinJte(templateEngine));
         });
 
-        app.get("/", ctx -> ctx.render("index.jte"));
+        app.get(NamedRoutes.rootPath(), ctx -> ctx.render("index.jte"));
+        app.post(NamedRoutes.urlsPath(), ctx -> UrlsController.create(ctx, urlRepository));
         return app;
     }
 
