@@ -1,6 +1,10 @@
 package hexlet.code;
 
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.resolve.ResourceCodeResolver;
 import io.javalin.Javalin;
+import io.javalin.rendering.template.JavalinJte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +30,15 @@ public class App {
     }
 
     public static Javalin getApp() {
-        return Javalin.create()
-                .get("/", ctx -> ctx.result("Hello World"));
+        var templateEngine = createTemplateEngine();
+
+        var app = Javalin.create(javalinConfig -> {
+            javalinConfig.bundledPlugins.enableDevLogging();
+            javalinConfig.fileRenderer(new JavalinJte(templateEngine));
+        });
+
+        app.get("/", ctx -> ctx.result("index.jte"));
+        return app;
     }
 
     private static int getPort() {
@@ -56,5 +67,11 @@ public class App {
             statement.execute(sql);
             LOGGER.info("Database schema initialized successfully");
         }
+    }
+
+    private static TemplateEngine createTemplateEngine() {
+        ClassLoader classLoader = App.class.getClassLoader();
+        ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
+        return TemplateEngine.create(codeResolver, ContentType.Html);
     }
 }
