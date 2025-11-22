@@ -1,5 +1,6 @@
 package hexlet.code.controller;
 
+import hexlet.code.dto.UrlsPage;
 import hexlet.code.model.Url;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.Messages;
@@ -13,6 +14,9 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
+
+import static io.javalin.rendering.template.TemplateUtil.model;
 
 public final class UrlsController {
 
@@ -63,6 +67,20 @@ public final class UrlsController {
 
         setFlash(ctx, SUCCESS_TYPE, Messages.SUCCESS);
         ctx.redirect(NamedRoutes.urlsPath());
+    }
+
+    public static void index(Context ctx, UrlRepository urlRepository) throws SQLException {
+        List<Url> urls = urlRepository.getEntities();
+        UrlsPage page = new UrlsPage(urls);
+
+        // Читаем flash-сообщения из сессии
+        String flashType = ctx.consumeSessionAttribute(FLASH_TYPE);
+        String flashMessage = ctx.consumeSessionAttribute(FLASH_MESSAGE);
+
+        page.setFlashType(flashType);
+        page.setFlashMessage(flashMessage);
+
+        ctx.render("urls/index.jte", model("page", page));
     }
 
     private static void setFlash(Context ctx, String flashType, String flashMessage) {
