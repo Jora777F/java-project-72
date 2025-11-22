@@ -18,7 +18,11 @@ public class Url {
         this.name = name;
         this.createdAt = createdAt;
     }
-    
+
+    /**
+     * Возвращаем дату создания URL в необходимом формате.
+     * @return дата создания
+     */
     public String getFormattedCreatedAt() {
         return createdAt.toLocalDateTime()
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
