@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @NoArgsConstructor
@@ -17,5 +18,9 @@ public class Url {
         this.name = name;
         this.createdAt = createdAt;
     }
-
+    
+    public String getFormattedCreatedAt() {
+        return createdAt.toLocalDateTime()
+                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+    }
 }
