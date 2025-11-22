@@ -5,7 +5,6 @@ plugins {
     id("jacoco")
     id("org.sonarqube") version "7.0.1.6134"
     id("io.freefair.lombok") version "8.14"
-    id("gg.jte.gradle") version "3.2.1"
 }
 
 group = "hexlet.code"
@@ -54,9 +53,4 @@ tasks.jacocoTestReport {
         xml.required.set(true)
         html.required.set(true)
     }
-}
-
-jte {
-    generate()
-    jteExtension("gg.jte.models.generator.ModelExtension")
 }
