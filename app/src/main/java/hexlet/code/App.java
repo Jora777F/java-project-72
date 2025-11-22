@@ -37,7 +37,7 @@ public class App {
             javalinConfig.fileRenderer(new JavalinJte(templateEngine));
         });
 
-        app.get("/", ctx -> ctx.result("index.jte"));
+        app.get("/", ctx -> ctx.render("index.jte"));
         return app;
     }
 
