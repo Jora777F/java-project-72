@@ -5,6 +5,7 @@ plugins {
     id("jacoco")
     id("org.sonarqube") version "7.0.1.6134"
     id("io.freefair.lombok") version "8.14"
+    id("gg.jte.gradle") version "3.2.1"
 }
 
 group = "hexlet.code"
@@ -25,6 +26,9 @@ dependencies {
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.h2database:h2:2.3.232")
+
+    implementation("gg.jte:jte:3.2.1")  // runtime
+    implementation("io.javalin:javalin-rendering:6.7.0")    // интеграция с Javalin
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -50,4 +54,9 @@ tasks.jacocoTestReport {
         xml.required.set(true)
         html.required.set(true)
     }
+}
+
+jte {
+    generate()
+    jteExtension("gg.jte.models.generator.ModelExtension")
 }
