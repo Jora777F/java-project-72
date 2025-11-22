@@ -1,5 +1,7 @@
 package hexlet.code.controller;
 
+import hexlet.code.dto.BasePage;
+import hexlet.code.dto.UrlPage;
 import hexlet.code.dto.UrlsPage;
 import hexlet.code.model.Url;
 import hexlet.code.repository.UrlRepository;
@@ -14,18 +16,20 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 public final class UrlsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UrlsController.class);
-    public static final String FLASH_TYPE = "flashType";
-    public static final String FLASH_MESSAGE = "flashMessage";
-    public static final String DANGER_TYPE = "danger";
-    public static final String SUCCESS_TYPE = "success";
-    public static final String INFO_TYPE = "info";
+    private static final String FLASH_TYPE = "flashType";
+    private static final String FLASH_MESSAGE = "flashMessage";
+    private static final String DANGER_TYPE = "danger";
+    private static final String SUCCESS_TYPE = "success";
+    private static final String INFO_TYPE = "info";
 
     private UrlsController() {
         throw new UnsupportedOperationException("This is a service class, "
@@ -74,13 +78,34 @@ public final class UrlsController {
         UrlsPage page = new UrlsPage(urls);
 
         // Читаем flash-сообщения из сессии
+        populateFlash(ctx, page);
+
+        ctx.render("urls/index.jte", model("page", page));
+    }
+
+    public static void show(Context ctx, UrlRepository urlRepository) throws SQLException {
+        Long id = ctx.pathParamAsClass("id", Long.class).get();
+
+        Optional<Url> urlOptional = urlRepository.findById(id);
+
+        if (urlOptional.isEmpty()) {
+            ctx.status(404).result("URL not found");
+            return;
+        }
+
+        Url url = urlOptional.get();
+        UrlPage page = new UrlPage(url);
+        populateFlash(ctx, page);
+
+        ctx.render("urls/show.jte", Collections.singletonMap("page", page));
+    }
+
+    private static void populateFlash(Context ctx, BasePage page) {
         String flashType = ctx.consumeSessionAttribute(FLASH_TYPE);
         String flashMessage = ctx.consumeSessionAttribute(FLASH_MESSAGE);
 
         page.setFlashType(flashType);
         page.setFlashMessage(flashMessage);
-
-        ctx.render("urls/index.jte", model("page", page));
     }
 
     private static void setFlash(Context ctx, String flashType, String flashMessage) {
