@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
@@ -75,9 +76,12 @@ public final class UrlsController {
         ctx.redirect(NamedRoutes.urlsPath());
     }
 
-    public static void index(Context ctx, UrlRepository urlRepository) throws SQLException {
+    public static void index(Context ctx, UrlRepository urlRepository,
+                             UrlCheckRepository urlCheckRepository) throws SQLException {
         List<Url> urls = urlRepository.getEntities();
-        UrlsPage page = new UrlsPage(urls);
+        Map<Long, UrlCheck> lastChecks = urlCheckRepository.getListOfLastChecks();
+
+        UrlsPage page = new UrlsPage(urls, lastChecks);
 
         // Читаем flash-сообщения из сессии
         populateFlash(ctx, page);
