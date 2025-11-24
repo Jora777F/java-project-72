@@ -31,6 +31,10 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+
+    testImplementation("io.javalin:javalin-testtools:6.7.0")
+    testImplementation("com.konghq:unirest-java:3.14.5")
+    testImplementation("org.assertj:assertj-core:3.27.6")
 }
 
 sonar {
