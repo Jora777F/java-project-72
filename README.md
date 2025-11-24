@@ -11,3 +11,26 @@
 ## 🚀 Демонстрация работы приложения
 Приложение доступно по адресу:
 https://java-project-72-zu76.onrender.com
+
+## 🛠️ Установка и запуск приложения
+**Локальная сборка проекта**
+1) Клонируйте репозиторий.
+```bash
+git clone https://github.com/Jora777F/java-project-72.git
+```
+2) Перейдите в директорию `/app`.
+```bash
+cd java-project72/app
+```
+3) Запустите приложение, используя команду из Makefile.
+```bash
+make run-dist
+```
+Приложение должно быть доступно по адресу:
+http://localhost:7070/.
+```textmate
+[main] INFO io.javalin.Javalin - Javalin started in 267ms \o/
+[main] INFO io.javalin.Javalin - Listening on http://localhost:7070/
+
+```
+
