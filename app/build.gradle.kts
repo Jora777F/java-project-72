@@ -28,12 +28,13 @@ dependencies {
 
     implementation("gg.jte:jte:3.2.1")  // runtime
     implementation("io.javalin:javalin-rendering:6.7.0")    // интеграция с Javalin
+    implementation("com.konghq:unirest-java:3.14.5")
+    implementation("org.jsoup:jsoup:1.21.2")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     testImplementation("io.javalin:javalin-testtools:6.7.0")
-    testImplementation("com.konghq:unirest-java:3.14.5")
     testImplementation("org.assertj:assertj-core:3.27.6")
 }
 
