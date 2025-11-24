@@ -115,4 +115,6 @@ public class AppTest {
             assertThat(response.body().string()).contains(testUrl);
         });
     }
+
+    // TODO: Написать тесты, используя библиотеку MockWebServer, fix flash
 }
