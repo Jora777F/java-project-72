@@ -3,7 +3,9 @@ package hexlet.code;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controller.UrlCheckController;
 import hexlet.code.controller.UrlsController;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
@@ -35,6 +37,7 @@ public class App {
     public static Javalin getApp(DataSource dataSource) {
         var templateEngine = createTemplateEngine();
         var urlRepository = new UrlRepository(dataSource);
+        var urlCheckRepository = new UrlCheckRepository(dataSource);
 
         var app = Javalin.create(javalinConfig -> {
             javalinConfig.bundledPlugins.enableDevLogging();
@@ -45,6 +48,8 @@ public class App {
         app.get(NamedRoutes.urlsPath(), ctx -> UrlsController.index(ctx, urlRepository));
         app.get(NamedRoutes.urlPath("{id}"), ctx -> UrlsController.show(ctx, urlRepository));
         app.post(NamedRoutes.urlsPath(), ctx -> UrlsController.create(ctx, urlRepository));
+        app.post(NamedRoutes.urlChecksPath("{id}"),
+                ctx -> UrlCheckController.create(ctx, urlRepository, urlCheckRepository));
         return app;
     }
 
