@@ -46,7 +46,7 @@ public class App {
 
         app.get(NamedRoutes.rootPath(), ctx -> ctx.render("index.jte"));
         app.get(NamedRoutes.urlsPath(), ctx -> UrlsController.index(ctx, urlRepository));
-        app.get(NamedRoutes.urlPath("{id}"), ctx -> UrlsController.show(ctx, urlRepository));
+        app.get(NamedRoutes.urlPath("{id}"), ctx -> UrlsController.show(ctx, urlRepository, urlCheckRepository));
         app.post(NamedRoutes.urlsPath(), ctx -> UrlsController.create(ctx, urlRepository));
         app.post(NamedRoutes.urlChecksPath("{id}"),
                 ctx -> UrlCheckController.create(ctx, urlRepository, urlCheckRepository));

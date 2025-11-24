@@ -4,6 +4,8 @@ import hexlet.code.dto.BasePage;
 import hexlet.code.dto.UrlPage;
 import hexlet.code.dto.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.Messages;
 import hexlet.code.util.NamedRoutes;
@@ -83,7 +85,8 @@ public final class UrlsController {
         ctx.render("urls/index.jte", model("page", page));
     }
 
-    public static void show(Context ctx, UrlRepository urlRepository) throws SQLException {
+    public static void show(Context ctx, UrlRepository urlRepository,
+                            UrlCheckRepository urlCheckRepository) throws SQLException {
         Long id = ctx.pathParamAsClass("id", Long.class).get();
 
         Optional<Url> urlOptional = urlRepository.findById(id);
@@ -94,7 +97,9 @@ public final class UrlsController {
         }
 
         Url url = urlOptional.get();
-        UrlPage page = new UrlPage(url);
+        List<UrlCheck> urlChecks = urlCheckRepository.getEntitiesByUrlId(id);
+
+        UrlPage page = new UrlPage(url, urlChecks);
         populateFlash(ctx, page);
 
         ctx.render("urls/show.jte", Collections.singletonMap("page", page));
