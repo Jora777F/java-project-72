@@ -1,15 +1,25 @@
 package hexlet.code;
 
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
+import okhttp3.Response;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,12 +28,15 @@ public class AppTest {
     private Javalin app;
     private DataSource dataSource;
     private UrlRepository urlRepository;
+    private UrlCheckRepository urlCheckRepository;
+    private MockWebServer mockWebServer;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         dataSource = DatabaseConfig.getDataSource();
         app = App.getApp(dataSource);
         urlRepository = new UrlRepository(dataSource);
+        urlCheckRepository = new UrlCheckRepository(dataSource);
 
         // Initialize database
         try (var connection = dataSource.getConnection();
@@ -36,6 +49,17 @@ public class AppTest {
             statement.execute(sql);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+
+        // Start the server
+        mockWebServer = new MockWebServer();
+        mockWebServer.start();
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        if (mockWebServer != null) {
+            mockWebServer.shutdown();
         }
     }
 
@@ -100,6 +124,24 @@ public class AppTest {
         });
     }
 
+    @Test
+    void shouldCheckContentOfResponseWhenTestMainPage() {
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.get(NamedRoutes.rootPath());
+            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.body().string()).contains("<form");
+        });
+    }
+
+    @Test
+    void shouldCheckContentOfResponseWhenTestUrlsPage() {
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.get(NamedRoutes.urlsPath());
+            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.body().string()).contains("<table");
+        });
+    }
+
     @DisplayName(value = "Should return status code 200, when test show url.")
     @Test
     void shouldReturnStatusCode200WhenTestShowUrl() {
@@ -116,5 +158,62 @@ public class AppTest {
         });
     }
 
-    // TODO: Написать тесты, используя библиотеку MockWebServer, fix flash
+    @DisplayName(value = "Should return status code 200 when create check url with mocking response.")
+    @Test
+    void shouldReturnStatusOkWhenCreateUrlCheckWithMockResponse() {
+        // Мокируем ответ от сайта
+        String mockHtml = "<html><head><title>Test Page</title></head>"
+                + "<body><h1>Test Header</h1>"
+                + "<meta name=\"description\" content=\"Test Description\"></body></html>";
+
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(mockHtml));
+
+        JavalinTest.test(app, (server, client) -> {
+            // Создаем URL с адресом MockWebServer
+            String mockUrl = mockWebServer.url("/").toString().replaceAll("/$", "");
+            Url url = new Url(mockUrl, new Timestamp(System.currentTimeMillis()));
+            urlRepository.save(url);
+
+            // Запускаем проверку
+            Response response = client.post(NamedRoutes.urlChecksPath(url.getId()));
+            assertThat(response.code()).isEqualTo(200);
+
+            // Проверяем, что проверка добавлена в БД
+            List<UrlCheck> checks = urlCheckRepository.getEntitiesByUrlId(url.getId());
+            assertThat(checks).hasSize(1);
+
+            UrlCheck check = checks.getFirst();
+            assertThat(check.getStatusCode()).isEqualTo(200);
+            assertThat(check.getTitle()).isEqualTo("Test Page");
+            assertThat(check.getH1()).isEqualTo("Test Header");
+            assertThat(check.getDescription()).isEqualTo("Test Description");
+        });
+    }
+
+    @DisplayName(value = "Should return status code 200 when test urls page shows last check.")
+    @Test
+    void shouldReturnStatusCodeOkWhenTestUrlsPageShowsLastCheck() {
+        String mockHtml = "<html><head><title>Test</title></head><body></body></html>";
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(mockHtml));
+
+        JavalinTest.test(app, (server, client) -> {
+            // Создаем URL
+            String mockUrl = mockWebServer.url("/").toString().replaceAll("/$", "");
+            Url url = new Url(mockUrl, new Timestamp(System.currentTimeMillis()));
+            urlRepository.save(url);
+
+            // Запускаем проверку
+            client.post(NamedRoutes.urlChecksPath(url.getId()));
+
+            // Проверяем, что на странице /urls отображается статус код
+            Response response = client.get(NamedRoutes.urlsPath());
+            assertThat(response.body().string())
+                    .contains(mockUrl)
+                    .contains("200");
+        });
+    }
 }
