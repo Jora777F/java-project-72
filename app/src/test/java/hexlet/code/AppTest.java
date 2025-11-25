@@ -216,4 +216,26 @@ public class AppTest {
                     .contains("200");
         });
     }
+
+    @Test
+    void testCreateUrlCheckWithFailedRequest() {
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(500)
+                .setBody("Internal Server Error"));
+
+        JavalinTest.test(app, (server, client) -> {
+            String mockUrl = mockWebServer.url("/").toString().replaceAll("/$", "");
+            Url url = new Url(mockUrl, new Timestamp(System.currentTimeMillis()));
+            urlRepository.save(url);
+
+            // Пытаемся запустить проверку
+            var response = client.post(NamedRoutes.urlChecksPath(url.getId()));
+            assertThat(response.code()).isEqualTo(200);
+
+            // Проверка должна быть добавлена с кодом 500
+            var checks = urlCheckRepository.getEntitiesByUrlId(url.getId());
+            assertThat(checks).hasSize(1);
+            assertThat(checks.getFirst().getStatusCode()).isEqualTo(500);
+        });
+    }
 }
