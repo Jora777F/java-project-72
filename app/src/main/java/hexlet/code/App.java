@@ -34,6 +34,16 @@ public class App {
         LOGGER.info("Application started successfully.");
     }
 
+    public static Javalin getApp() {
+        DataSource dataSource = DatabaseConfig.getDataSource();
+        try {
+            initDatabase(dataSource);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to initialize database", e);
+        }
+        return getApp(dataSource);
+    }
+
     public static Javalin getApp(DataSource dataSource) {
         var templateEngine = createTemplateEngine();
         var urlRepository = new UrlRepository(dataSource);
