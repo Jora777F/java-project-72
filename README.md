@@ -15,15 +15,16 @@ https://java-project-72-zu76.onrender.com
 Функциональные возможности представлены ниже:
 1) **Главная страница веб-приложения**.
 
-![Main Page](assets/Main Page.png)
+![Main Page](https://github.com/Jora777F/java-project-72/blob/main/assets/Main%20Page.png)
+
 
 2) **Добавление сайта.**
 
-![Add Site](assets/Add Site.png)
+![Add Site](https://github.com/Jora777F/java-project-72/blob/main/assets/Add%20Site.png)
 
 3) **Подробная информация о сайте**.
 
-![Check Web Site](assets/Check Web Site.png)
+![Check Web Site](https://github.com/Jora777F/java-project-72/blob/main/assets/Check%20Web%20Site.png)
 
 ## 🛠️ Установка и запуск приложения
 **Локальная сборка проекта**
