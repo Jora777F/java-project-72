@@ -36,6 +36,8 @@ dependencies {
 
     testImplementation("io.javalin:javalin-testtools:6.7.0")
     testImplementation("org.assertj:assertj-core:3.27.6")
+
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 }
 
 sonar {
