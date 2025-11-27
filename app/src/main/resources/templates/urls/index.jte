@@ -1,4 +1,5 @@
 @import hexlet.code.dto.UrlsPage
+@import hexlet.code.util.DateTimeUtil
 @import hexlet.code.util.NamedRoutes
 @param UrlsPage page
 
@@ -29,7 +30,7 @@ content = @`
                         <td><a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a></td>
                         <td>
                             @if(page.getLastChecks().containsKey(url.getId()))
-                                ${page.getLastChecks().get(url.getId()).getFormattedCreatedAt()}
+                                ${DateTimeUtil.format(page.getLastChecks().get(url.getId()).getCreatedAt())}
                             @endif
                         </td>
                         <td>
