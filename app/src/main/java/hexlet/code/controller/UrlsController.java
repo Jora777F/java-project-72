@@ -11,6 +11,7 @@ import hexlet.code.util.Messages;
 import hexlet.code.util.NamedRoutes;
 import hexlet.code.util.UrlUtil;
 import io.javalin.http.Context;
+import io.javalin.http.NotFoundResponse;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.MalformedURLException;
@@ -19,7 +20,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -91,14 +91,9 @@ public final class UrlsController {
                             UrlCheckRepository urlCheckRepository) throws SQLException {
         Long id = ctx.pathParamAsClass("id", Long.class).get();
 
-        Optional<Url> urlOptional = urlRepository.findById(id);
+        Url url = urlRepository.findById(id)
+                .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found."));
 
-        if (urlOptional.isEmpty()) {
-            ctx.status(404).result("URL not found");
-            return;
-        }
-
-        Url url = urlOptional.get();
         List<UrlCheck> urlChecks = urlCheckRepository.getEntitiesByUrlId(id);
 
         UrlPage page = new UrlPage(url, urlChecks);
