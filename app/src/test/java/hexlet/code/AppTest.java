@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import javax.sql.DataSource;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -148,7 +147,7 @@ public final class AppTest {
         JavalinTest.test(app, (server, client) -> {
             // Создаем URL
             String testUrl = "https://example.com";
-            Url url = new Url(testUrl, new java.sql.Timestamp(System.currentTimeMillis()));
+            Url url = new Url(testUrl);
             urlRepository.save(url);
 
             // Проверяем страницу URL
@@ -173,7 +172,7 @@ public final class AppTest {
         JavalinTest.test(app, (server, client) -> {
             // Создаем URL с адресом MockWebServer
             String mockUrl = mockWebServer.url("/").toString().replaceAll("/$", "");
-            Url url = new Url(mockUrl, new Timestamp(System.currentTimeMillis()));
+            Url url = new Url(mockUrl);
             urlRepository.save(url);
 
             // Запускаем проверку
@@ -203,7 +202,7 @@ public final class AppTest {
         JavalinTest.test(app, (server, client) -> {
             // Создаем URL
             String mockUrl = mockWebServer.url("/").toString().replaceAll("/$", "");
-            Url url = new Url(mockUrl, new Timestamp(System.currentTimeMillis()));
+            Url url = new Url(mockUrl);
             urlRepository.save(url);
 
             // Запускаем проверку
@@ -225,7 +224,7 @@ public final class AppTest {
 
         JavalinTest.test(app, (server, client) -> {
             String mockUrl = mockWebServer.url("/").toString().replaceAll("/$", "");
-            Url url = new Url(mockUrl, new Timestamp(System.currentTimeMillis()));
+            Url url = new Url(mockUrl);
             urlRepository.save(url);
 
             // Пытаемся запустить проверку
