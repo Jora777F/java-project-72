@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,12 +26,14 @@ public final class UrlCheckRepository extends BaseRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
+            Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+
             stmt.setLong(1, urlCheck.getUrlId());
             stmt.setInt(2, urlCheck.getStatusCode());
             stmt.setString(3, urlCheck.getH1());
             stmt.setString(4, urlCheck.getTitle());
             stmt.setString(5, urlCheck.getDescription());
-            stmt.setTimestamp(6, urlCheck.getCreatedAt());
+            stmt.setTimestamp(6, createdAt);
             stmt.executeUpdate();
 
             ResultSet generatedKeys = stmt.getGeneratedKeys();
@@ -83,7 +86,8 @@ public final class UrlCheckRepository extends BaseRepository {
         var description = rs.getString("description");
         var createdAt = rs.getTimestamp("created_at");
 
-        var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId, createdAt);
+        var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId);
+        urlCheck.setCreatedAt(createdAt);
         urlCheck.setId(id);
         return urlCheck;
     }

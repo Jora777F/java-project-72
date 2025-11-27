@@ -67,7 +67,7 @@ public final class UrlsController {
             return;
         }
 
-        Url url = new Url(normalizedUrl, new Timestamp(System.currentTimeMillis()));
+        Url url = new Url(normalizedUrl);
         urlRepository.save(url);
         log.info("Successfully created URL, ID: {}", url.getId());
 

@@ -10,7 +10,6 @@ import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -42,8 +41,7 @@ public final class UrlCheckController {
             var descriptionElement = doc.selectFirst("meta[name=description]");
             var description = descriptionElement == null ? "" : descriptionElement.attr("content");
 
-            var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId,
-                    new Timestamp(System.currentTimeMillis()));
+            var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId);
 
             urlCheckRepository.save(urlCheck);
 

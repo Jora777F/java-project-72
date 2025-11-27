@@ -26,8 +26,10 @@ public final class UrlRepository extends BaseRepository {
              PreparedStatement preparedStatement = connection.prepareStatement(sql,
                      Statement.RETURN_GENERATED_KEYS)) {
 
+            Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+
             preparedStatement.setString(1, url.getName());
-            preparedStatement.setTimestamp(2, url.getCreatedAt());
+            preparedStatement.setTimestamp(2, createdAt);
             preparedStatement.executeUpdate();
 
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -53,7 +55,8 @@ public final class UrlRepository extends BaseRepository {
                 final String name = resultSet.getString("name");
                 final Timestamp createdAt = resultSet.getTimestamp("created_at");
 
-                Url url = new Url(name, createdAt);
+                Url url = new Url(name);
+                url.setCreatedAt(createdAt);
                 url.setId(resultSet.getLong("id"));
                 return Optional.of(url);
             }
@@ -73,7 +76,8 @@ public final class UrlRepository extends BaseRepository {
             if (resultSet.next()) {
                 final Timestamp createdAt = resultSet.getTimestamp("created_at");
 
-                Url url = new Url(resultSet.getString("name"), createdAt);
+                Url url = new Url(resultSet.getString("name"));
+                url.setCreatedAt(createdAt);
                 url.setId(resultSet.getLong("id"));
 
                 return Optional.of(url);
@@ -96,7 +100,8 @@ public final class UrlRepository extends BaseRepository {
                 final String name = resultSet.getString("name");
                 final Timestamp createdAt = resultSet.getTimestamp("created_at");
 
-                Url url = new Url(name, createdAt);
+                Url url = new Url(name);
+                url.setCreatedAt(createdAt);
                 url.setId(id);
                 result.add(url);
             }
