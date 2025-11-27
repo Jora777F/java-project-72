@@ -3,7 +3,7 @@ package hexlet.code.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Data
@@ -12,7 +12,7 @@ public class Url {
 
     private Long id;
     private String name;
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     public Url(String name) {
         this.name = name;
@@ -23,7 +23,6 @@ public class Url {
      * @return дата создания
      */
     public String getFormattedCreatedAt() {
-        return createdAt.toLocalDateTime()
-                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+        return createdAt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
     }
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -19,7 +19,7 @@ public final class UrlCheck {
     private String h1;
     private String description;
     private Long urlId;
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     public UrlCheck(int statusCode, String title, String h1, String description, Long urlId) {
         this.statusCode = statusCode;
@@ -30,7 +30,6 @@ public final class UrlCheck {
     }
 
     public String getFormattedCreatedAt() {
-        return createdAt.toLocalDateTime()
-                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+        return createdAt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
     }
 }

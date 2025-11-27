@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,7 @@ public final class UrlCheckRepository extends BaseRepository {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+            Timestamp createdAt = Timestamp.valueOf(LocalDateTime.now());
 
             stmt.setLong(1, urlCheck.getUrlId());
             stmt.setInt(2, urlCheck.getStatusCode());
@@ -84,9 +85,9 @@ public final class UrlCheckRepository extends BaseRepository {
         var title = rs.getString("title");
         var h1 = rs.getString("h1");
         var description = rs.getString("description");
-        var createdAt = rs.getTimestamp("created_at");
+        LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
 
-        var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId);
+        UrlCheck urlCheck = new UrlCheck(statusCode, title, h1, description, urlId);
         urlCheck.setCreatedAt(createdAt);
         urlCheck.setId(id);
         return urlCheck;

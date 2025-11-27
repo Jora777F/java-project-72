@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public final class UrlRepository extends BaseRepository {
              PreparedStatement preparedStatement = connection.prepareStatement(sql,
                      Statement.RETURN_GENERATED_KEYS)) {
 
-            Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+            Timestamp createdAt = Timestamp.valueOf(LocalDateTime.now());
 
             preparedStatement.setString(1, url.getName());
             preparedStatement.setTimestamp(2, createdAt);
@@ -53,7 +54,7 @@ public final class UrlRepository extends BaseRepository {
 
             if (resultSet.next()) {
                 final String name = resultSet.getString("name");
-                final Timestamp createdAt = resultSet.getTimestamp("created_at");
+                final LocalDateTime createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
 
                 Url url = new Url(name);
                 url.setCreatedAt(createdAt);
@@ -74,7 +75,7 @@ public final class UrlRepository extends BaseRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                final Timestamp createdAt = resultSet.getTimestamp("created_at");
+                final LocalDateTime createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
 
                 Url url = new Url(resultSet.getString("name"));
                 url.setCreatedAt(createdAt);
@@ -98,7 +99,7 @@ public final class UrlRepository extends BaseRepository {
             while (resultSet.next()) {
                 final long id = resultSet.getLong("id");
                 final String name = resultSet.getString("name");
-                final Timestamp createdAt = resultSet.getTimestamp("created_at");
+                final LocalDateTime createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
 
                 Url url = new Url(name);
                 url.setCreatedAt(createdAt);
