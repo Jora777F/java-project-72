@@ -11,8 +11,7 @@ import hexlet.code.util.Messages;
 import hexlet.code.util.NamedRoutes;
 import hexlet.code.util.UrlUtil;
 import io.javalin.http.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -25,9 +24,9 @@ import java.util.Optional;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
+@Slf4j
 public final class UrlsController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UrlsController.class);
     private static final String FLASH_TYPE = "flashType";
     private static final String FLASH_MESSAGE = "flashMessage";
     private static final String DANGER_TYPE = "danger";
@@ -41,7 +40,7 @@ public final class UrlsController {
 
     public static void create(Context ctx, UrlRepository urlRepository) throws SQLException {
         String urlString = ctx.formParam("url");
-        LOGGER.debug("Initial URL input: '{}'", urlString);
+        log.debug("Initial URL input: '{}'", urlString);
 
         if (urlString == null || urlString.isBlank()) {
             setFlash(ctx, DANGER_TYPE, Messages.INCORRECT_URL);
@@ -53,13 +52,13 @@ public final class UrlsController {
         try {
             normalizedUrl = UrlUtil.normalizeUrl(urlString);
         } catch (MalformedURLException | URISyntaxException e) {
-            LOGGER.error("URL normalization failed for '{}': {}", urlString, e.getMessage());
+            log.error("URL normalization failed for '{}': {}", urlString, e.getMessage());
             setFlash(ctx, DANGER_TYPE, Messages.INCORRECT_URL);
             ctx.redirect(NamedRoutes.rootPath());
             return;
         }
 
-        LOGGER.debug("Checking if URL exists: '{}'", normalizedUrl);
+        log.debug("Checking if URL exists: '{}'", normalizedUrl);
         var existingUrl = urlRepository.findByName(normalizedUrl);
 
         if (existingUrl.isPresent()) {
@@ -70,7 +69,7 @@ public final class UrlsController {
 
         Url url = new Url(normalizedUrl, new Timestamp(System.currentTimeMillis()));
         urlRepository.save(url);
-        LOGGER.info("Successfully created URL, ID: {}", url.getId());
+        log.info("Successfully created URL, ID: {}", url.getId());
 
         setFlash(ctx, SUCCESS_TYPE, Messages.SUCCESS);
         ctx.redirect(NamedRoutes.urlsPath());

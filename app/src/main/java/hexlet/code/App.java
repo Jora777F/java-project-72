@@ -10,8 +10,7 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
@@ -20,9 +19,9 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class App {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
     public static final String DEFAULT_PORT = "7070";
 
     public static void main(String[] args) throws Exception {
@@ -31,7 +30,7 @@ public class App {
 
         Javalin app = getApp(dataSource);
         app.start(getPort());
-        LOGGER.info("Application started successfully.");
+        log.info("Application started successfully.");
     }
 
     public static Javalin getApp() {
@@ -65,12 +64,12 @@ public class App {
 
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", DEFAULT_PORT);
-        LOGGER.debug("Starting server on port: {}", port);
+        log.debug("Starting server on port: {}", port);
         return Integer.parseInt(port);
     }
 
     private static void initDatabase(DataSource dataSource) throws SQLException {
-        LOGGER.info("Initializing database schema...");
+        log.info("Initializing database schema...");
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
 
@@ -87,7 +86,7 @@ public class App {
                     .collect(Collectors.joining("\n"));
 
             statement.execute(sql);
-            LOGGER.info("Database schema initialized successfully");
+            log.info("Database schema initialized successfully");
         }
     }
 
