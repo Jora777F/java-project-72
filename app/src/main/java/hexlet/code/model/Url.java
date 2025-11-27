@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Data
 @NoArgsConstructor
@@ -16,13 +15,5 @@ public class Url {
 
     public Url(String name) {
         this.name = name;
-    }
-
-    /**
-     * Возвращаем дату создания URL в необходимом формате.
-     * @return дата создания
-     */
-    public String getFormattedCreatedAt() {
-        return createdAt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
     }
 }
